@@ -1,2 +1,3 @@
 # entrega_final_pos
-Repositorio com o projeto da entrega final da pós gradução. 
+Repositório com o projeto da entrega final da pós graduação. 
+Datathon by Globo.com
