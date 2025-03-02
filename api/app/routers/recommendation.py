@@ -28,11 +28,11 @@ def recomendar_noticias(noticia_input, timestamp_acesso):
     Retorna:
     - DataFrame com as recomendações (notícia e similaridade).
     """
-    JANELA_NOTICIAS = 7
+    JANELA_NOTICIAS = 7 * 24 * 60 * 60
     TOP_N = 5
 
-    timestamp_limite = timestamp_acesso - JANELA_NOTICIAS * 24 * 60 * 60
-    df_recentes = df_noticias[(timestamp_acesso >= df_noticias['issued']) & (df_noticias['issued'] >= timestamp_limite)].copy()
+    timestamp_limite = timestamp_acesso - JANELA_NOTICIAS 
+    df_recentes = df_noticias[(timestamp_acesso >= df_noticias['issued']) & (df_noticias['issued'] >= timestamp_limite)]
     tfidf_matrix_recentes = tfidf_matrix[df_recentes.index, :]
 
     input_tfidf = vectorizer.transform([noticia_input])
@@ -51,12 +51,27 @@ def recomendar_noticias(noticia_input, timestamp_acesso):
 
     return recomendacoes
 
-def analisar_historico(id_noticias):
+def recomendar_populares(top_n, timestamp_acesso):
+    """
+    Função para recomendar as notícias mais populares.
+
+    Parâmetros:
+    - top_n: quantidade de notícias a recomendar;
+    """
+    JANELA_NOTICIAS = 7 * 24 * 60 * 60
+
+    timestamp_limite = timestamp_acesso - JANELA_NOTICIAS
+    df_recentes = df_noticias[(timestamp_acesso >= df_noticias['issued']) & (df_noticias['issued'] >= timestamp_limite)]
+    df_populares = df_recentes.sort_values(by='acessos', ascending=False).head(top_n)
+    return df_populares['page'].head(top_n).values
+
+def analisar_historico(id_noticias, timestamp_acesso):
     """
     Função para percorrer todas notícias do histórico do usuário.
 
     Parâmetros:
     - id_noticias: Array com os IDs das notícias acessadas;
+    - timestamp_acesso: timestamp (em segundos) do acesso para limitar as notícias recentes;
 
     Retorna:
     - DataFrame com as recomendações para o histórico.
@@ -64,19 +79,20 @@ def analisar_historico(id_noticias):
     PESO_DECAIMENTO = 0.1
     TOP_N = 5
 
+    if id_noticias == []:
+        return recomendar_populares(TOP_N, timestamp_acesso)
     rank_recomendacoes = pd.DataFrame()
     for i, id_noticia in enumerate(id_noticias):
         noticia = df_noticias.loc[df_noticias['page'] == id_noticia, 'noticia'].values[0]
-        timestamp = df_noticias.loc[df_noticias['page'] == id_noticia, 'issued'].values[0]
-        recomendacoes = recomendar_noticias(noticia, timestamp)
+        recomendacoes = recomendar_noticias(noticia, timestamp_acesso)
         recomendacoes['similaridade'] = recomendacoes['similaridade'] * math.exp(-PESO_DECAIMENTO * i)
         rank_recomendacoes = pd.concat([rank_recomendacoes, recomendacoes], ignore_index=True)
     rank_recomendacoes = rank_recomendacoes.sort_values(by='similaridade', ascending=False)
 
-    return rank_recomendacoes['noticia'].head(TOP_N).values
+    return rank_recomendacoes['noticia'].head(TOP_N).values.tolist()
 
 @router.post("/recomendacoes")
 def get_recomendacoes(request: RecomendacaoRequest):
-    recomendacoes_array = analisar_historico(id_noticias=request.historico_acessos)
-    recomendacoes = {"recomendacoes": recomendacoes_array.tolist()}
+    recomendacoes_array = analisar_historico(id_noticias=request.historico_acessos, timestamp_acesso=request.timestamp_acesso)
+    recomendacoes = {"recomendacoes": recomendacoes_array}
     return recomendacoes
