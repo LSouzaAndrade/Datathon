@@ -8,12 +8,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 router = APIRouter()
 
-df_noticias = pd.read_parquet('api/app/auxiliar/processed_itens.parquet')
+df_noticias = pd.read_parquet('/app/app/auxiliar/processed_itens.parquet')
 
-with open("api/app/auxiliar/tfidf_vocab.pkl", "rb") as f:
+with open("/app/app/auxiliar/tfidf_vocab.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
-with open("api/app/auxiliar/tfidf_matrix.pkl", "rb") as f:
+with open("/app/app/auxiliar/tfidf_matrix.pkl", "rb") as f:
     tfidf_matrix = pickle.load(f)
 
 
