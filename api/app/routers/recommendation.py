@@ -2,7 +2,7 @@ import math
 import pandas as pd
 import pickle
 from app.pydantic_models.models import RecomendacaoRequest
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -84,9 +84,13 @@ def analisar_historico(id_noticias, timestamp_acesso):
     rank_recomendacoes = pd.DataFrame()
     for i, id_noticia in enumerate(id_noticias):
         noticia = df_noticias.loc[df_noticias['page'] == id_noticia, 'noticia'].values[0]
-        recomendacoes = recomendar_noticias(noticia, timestamp_acesso)
-        recomendacoes['similaridade'] = recomendacoes['similaridade'] * math.exp(-PESO_DECAIMENTO * i)
-        rank_recomendacoes = pd.concat([rank_recomendacoes, recomendacoes], ignore_index=True)
+        if noticia:
+            noticia = df_noticias.loc[df_noticias['page'] == id_noticia, 'noticia'].values[0]
+            recomendacoes = recomendar_noticias(noticia, timestamp_acesso)
+            recomendacoes['similaridade'] = recomendacoes['similaridade'] * math.exp(-PESO_DECAIMENTO * i)
+            rank_recomendacoes = pd.concat([rank_recomendacoes, recomendacoes], ignore_index=True)
+        else:
+            raise HTTPException(status_code=404, detail=f"Notícia {id_noticia} não encontrada.")
     rank_recomendacoes = rank_recomendacoes.sort_values(by='similaridade', ascending=False)
 
     return rank_recomendacoes['noticia'].head(TOP_N).values.tolist()
