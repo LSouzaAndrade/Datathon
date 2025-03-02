@@ -2,14 +2,14 @@ FROM python:3.12.5-slim
 
 WORKDIR /app
 
-RUN apt-get update
+COPY requirements.txt .
 
-RUN apt-get install -y awscli
+RUN pip install --upgrade pip
 
-EXPOSE 80
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN pip install --no-cache-dir -r requirements.txt
+EXPOSE 8000
 
 CMD ["python", "run.py"]
