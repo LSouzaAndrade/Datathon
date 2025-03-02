@@ -6,6 +6,6 @@ if __name__ == "__main__":
     run(
         "run:app",
         host="localhost",
-        port=8000,
+        port=80,
         workers=1,
     )
