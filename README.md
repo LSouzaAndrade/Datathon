@@ -33,6 +33,7 @@ A estrutura de pastas e arquivos do projeto se encontra disposta da seguinte man
 └── validacao.pcsv                          # Arquivo do dataset original do Datathon 
 
 ```
+Devido a restrição do tamanho máximo para arquivos no repositório, os arquivos do diretório "auxiliar" se encontram em: https://drive.google.com/drive/u/0/folders/12dl4JVzO7wL79IacuM8WCnP3bkoricjl
 
 ## 📋 Pré-requisitos
 Para utilização da API para os modelos gerados neste projeto, se fazem necessárias as dependências contidas no arquivo requirements.txt.
