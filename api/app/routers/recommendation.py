@@ -83,8 +83,8 @@ def analisar_historico(id_noticias, timestamp_acesso):
         return recomendar_populares(TOP_N, timestamp_acesso)
     rank_recomendacoes = pd.DataFrame()
     for i, id_noticia in enumerate(id_noticias):
-        noticia = df_noticias.loc[df_noticias['page'] == id_noticia, 'noticia'].values[0]
-        if noticia:
+        noticia = df_noticias.loc[df_noticias['page'] == id_noticia, 'noticia']
+        if not noticia.empty:
             noticia = df_noticias.loc[df_noticias['page'] == id_noticia, 'noticia'].values[0]
             recomendacoes = recomendar_noticias(noticia, timestamp_acesso)
             recomendacoes['similaridade'] = recomendacoes['similaridade'] * math.exp(-PESO_DECAIMENTO * i)
