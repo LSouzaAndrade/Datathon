@@ -63,7 +63,7 @@ def recomendar_populares(top_n, timestamp_acesso):
     timestamp_limite = timestamp_acesso - JANELA_NOTICIAS
     df_recentes = df_noticias[(timestamp_acesso >= df_noticias['issued']) & (df_noticias['issued'] >= timestamp_limite)]
     df_populares = df_recentes.sort_values(by='acessos', ascending=False).head(top_n)
-    return df_populares['page'].head(top_n).values
+    return df_populares['page'].head(top_n).values.tolist()
 
 def analisar_historico(id_noticias, timestamp_acesso):
     """
