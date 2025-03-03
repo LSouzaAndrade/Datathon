@@ -19,10 +19,11 @@ A estrutura de pastas e arquivos do projeto se encontra disposta da seguinte man
             └── tfidf_vocab.pkl             # Vocabulário do corpo textual TF-IDF
         ├── pydantic_models                 # Diretório de modelos de validação de dados
             └── models.py                   # Modelos de validação de dados
-        └── routers                         # Diretório de endpoints da API
+        ├── routers                         # Diretório de endpoints da API
             ├── healthcheck.py              # Endpoint de healthcheck da API
             ├── recommendation.py           # Endpoint de recomendações de notícias
             └── root.py                     # Redirecionamento para documentação da API
+        └── api.py                          # Estrutura da API
     ├── Dockerfile                          # Arquivo de configuração da imagem Docker
     ├── requirements.txt                    # Dependências externas utilizadas
     └── run.py                              # Script de inicialização do servidor para API
